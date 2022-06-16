@@ -1,3 +1,4 @@
+import asyncio    # ANOTHER OPTION could be use celery that lets you more controlo over done or canceled tasks
 from django.conf import  settings
 from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 from accounts.models import User
+
+loop = asyncio.get_event_loop()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,10 +35,10 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             msg = _("Follow this link %s/user/%s/email_validate for confirm your email" % (settings.SERVER_URL,
                                                                                            user.id))
-            send_mail(_("User registered validate email"), msg, settings.FROM_MAIL, user.email)
+            loop.run_in_executor(send_mail(_("User registered validate email"), msg, settings.FROM_MAIL, user.email))
             phone_sms = _("Follow this link %s/user/%s/phone_validate for confirm your phone" % (settings.SERVER_URL,
                                                                                                  user.id))
-            #sms_send(user.phone, phone_sms)
+            #loop.run_in_executor(sms_send(user.phone, phone_sms))
         return user
 
 
