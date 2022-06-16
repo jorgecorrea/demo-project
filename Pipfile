@@ -7,7 +7,8 @@ name = "pypi"
 django = "*"
 psycopg2 = "*"
 django-rest-framework = "*"
-django-phonenumber-field = "*"
+markdown = "*"
+django-filter = "*"
 
 [dev-packages]
 
