@@ -1,5 +1,5 @@
 import asyncio    # ANOTHER OPTION could be use celery that lets you more controlo over done or canceled tasks
-from django.conf import  settings
+from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
 
@@ -14,6 +14,7 @@ loop = asyncio.get_event_loop()
 class UserSerializer(serializers.ModelSerializer):
     validated_email = serializers.BooleanField(read_only=True)
     validated_phone = serializers.BooleanField(read_only=True)
+    password = serializers.CharField(style={'input_type': 'password'})
 
     class Meta:
         model = User
