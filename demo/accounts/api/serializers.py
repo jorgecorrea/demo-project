@@ -8,7 +8,15 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from accounts.models import User
 
-loop = asyncio.get_event_loop()
+
+def get_or_create_eventloop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError as ex:
+        if "There is no current event loop in thread" in str(ex):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return asyncio.get_event_loop()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -36,6 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             msg = _("Follow this link %s/user/%s/email_validate for confirm your email" % (settings.SERVER_URL,
                                                                                            user.id))
+            loop = get_or_create_eventloop()
             loop.run_in_executor(send_mail(_("User registered validate email"), msg, settings.FROM_MAIL, user.email))
             phone_sms = _("Follow this link %s/user/%s/phone_validate for confirm your phone" % (settings.SERVER_URL,
                                                                                                  user.id))
